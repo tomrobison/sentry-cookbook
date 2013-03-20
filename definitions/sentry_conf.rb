@@ -26,6 +26,11 @@ define :sentry_conf,
        :settings => {} do
 
   Chef::Log.info("Making sentry config for: #{params[:name]}")
+
+  package "python-dev" do
+    action :install
+  end
+
   include_recipe "python::virtualenv"
   include_recipe "python::pip"
   include_recipe "sentry::default"
@@ -36,7 +41,8 @@ define :sentry_conf,
 
   settings_variables = params[:settings]
   config = params[:config] || node["sentry"]["config"]
-  settings_variables["config"] = config
+  # settings_variables.set["config"] = config
+
 
   Chef::Log.info("Making directory for virtualenv: #{virtualenv_dir}")
   # Making application virtualenv directory
@@ -66,6 +72,19 @@ define :sentry_conf,
     variables(settings_variables.to_hash)
   end
 
+  deps = ["setproctitle", "python-openid", "oauth2", "six", "kombu", "billiard", "pytz"]
+
+  deps.each do |dep|
+    Chef::Log.info("Install #{dep} dependency")
+    python_pip dep do
+      user params[:user]
+      group params[:group]
+      provider Chef::Provider::PythonPip
+      virtualenv virtualenv_dir
+      action :install
+    end
+  end
+
   # Intstall sentry via pip
   python_pip "sentry" do
     provider Chef::Provider::PythonPip
@@ -78,6 +97,8 @@ define :sentry_conf,
 
   # Install database drivers
   node['sentry']['settings']['databases'].each do |key, db_options|
+    Chef::Log.info("DB: #{key}: #{db_options}")
+
     driver_name = nil
     if db_options['ENGINE'] == 'django.db.backends.postgresql_psycopg2'
       driver_name = 'psycopg2'
@@ -85,6 +106,8 @@ define :sentry_conf,
       driver_name = 'MySQLdb'
     elsif db_options['ENGINE'] == 'django.db.backends.oracle'
       driver_name = 'cx_Oracle'
+    elsif db_options['ENGINE'] == 'django.db.backends.sqlite3'
+      driver_name = nil
     else
       raise "You need specify database ENGINE"
     end
