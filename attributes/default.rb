@@ -61,13 +61,15 @@ default["sentry"]["settings"]["social_auth_create_users"] = 'True'
 
 # Email settings
 default["sentry"]["settings"]["email"] = {
-  "backend" => 'django.core.mail.backends.smtp.EmailBackend',
+  "backend" => 'django_mailgun.MailgunBackend',
   "host" => "localhost",
   "password" => '',
   "user" => '',
   "port" => 25,
   "use_tls" => 'False',
 }
+default["sentry"]["settings"]["mailgun_access_key"] = ""
+default["sentry"]["settings"]["mailgun_server_name"] = ""
 
   # Social settings
 default["sentry"]["settings"]["social"] = {

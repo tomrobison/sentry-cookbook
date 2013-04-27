@@ -66,6 +66,19 @@ define :sentry_conf,
     variables(settings_variables.to_hash)
   end
 
+  deps = ["setproctitle", "python-openid", "oauth2", "six", "kombu", "billiard", "pytz", "django-mailgun"]
+
+  deps.each do |dep|
+    Chef::Log.info("Install #{dep} dependency")
+    python_pip dep do
+      user params[:user]
+      group params[:group]
+      provider Chef::Provider::PythonPip
+      virtualenv virtualenv_dir
+      action :install
+    end
+  end
+
   # Intstall sentry via pip
   python_pip "sentry" do
     provider Chef::Provider::PythonPip

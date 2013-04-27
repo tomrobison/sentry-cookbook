@@ -43,11 +43,15 @@ SENTRY_KEY = "<%= @private_key %>"
 
 EMAIL_BACKEND = "<%= @email['backend'] %>"
 
-EMAIL_HOST = "<%= @email['host'] %>"
-EMAIL_HOST_PASSWORD = "<%= @email['password'] %>"
-EMAIL_HOST_USER = "<%= @email['user'] %>"
-EMAIL_PORT = <%= @email['port'] %>
-EMAIL_USE_TLS = <%= @email['use_tls'] || "False" %>
+#EMAIL_HOST = "<%= @email['host'] %>"
+#EMAIL_HOST_PASSWORD = "<%= @email['password'] %>"
+#EMAIL_HOST_USER = "<%= @email['user'] %>"
+#EMAIL_PORT = <%= @email['port'] %>
+#EMAIL_USE_TLS = <%= @email['use_tls'] || "False" %>
+
+# MailGun
+MAILGUN_ACCESS_KEY = "<%= @mailgun_access_key %>"
+MAILGUN_SERVER_NAME = "<%= @mailgun_server_name %>"
 
 
 <% for network, params in @social %>
